@@ -1,0 +1,17 @@
+zookeeper-install-directory={{ exhibitor_zookeeper_install_dir }}
+zookeeper-data-directory={{ exhibitor_zookeeper_data_dir }}
+zookeeper-log-directory={{ exhibitor_zookeeper_log_dir }}
+log-index-directory={{ exhibitor_zookeeper_log_index_dir }}
+cleanup-period-ms=300000
+check-ms=30000
+backup-period-ms=600000
+backup-extra=directory\={{ exhibitor_zookeeper_backups_dir|regex_replace('/','%2F') }}
+client-port=2181
+cleanup-max-files=20
+backup-max-store-ms=21600000
+connect-port=2888
+observer-threshold=0
+election-port=3888
+zoo-cfg-extra=tickTime\=2000&initLimit\=10&syncLimit\=5&quorumListenOnAllIPs\=true
+auto-manage-instances-settling-period-ms=0
+auto-manage-instances=1

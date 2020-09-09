@@ -1,0 +1,10 @@
+---
+- name: restart exhibitor service
+  service:
+    name: exhibitor
+    state: restarted
+
+- name: reload systemd
+  systemd:
+    daemon_reload: yes
+...

@@ -1,0 +1,10 @@
+#!/bin/bash
+HOSTNAME=$(hostname -I | awk '{print ${{ exhibitor_hostname }}}')
+S3_BUCKET='{{ exhibitor_s3_bucket_config }}'
+S3_PREFIX='{{ exhibitor_s3_prefix }}'
+AWS_REGION='{{ exhibitor_s3_bucket_region }}'
+java {% if exhibitor_s3_endpoint is defined %}-Dexhibitor-s3-endpoint={{ exhibitor_s3_endpoint }} {% endif %}-jar {{ exhibitor_jar_dest_path }} \
+    --filesystembackup {{ exhibitor_zookeeper_enable_filesystembackup }} \
+    --port 8080 --defaultconfig {{ exhibitor_defaults_conf_path }} \
+    --configtype s3 --s3config $S3_BUCKET:$S3_PREFIX \
+    --s3region $AWS_REGION --hostname $HOSTNAME

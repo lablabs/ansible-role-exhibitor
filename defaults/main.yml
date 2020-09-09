@@ -1,0 +1,36 @@
+---
+exhibitor_app_dir: "/opt/exhibitor"
+
+exhibitor_unix_user: zookeeper
+exhibitor_unix_group: zookeeper
+
+#exhibitor_jar_s3_bucket: "{{ inv_exhibitor_jar_s3_bucket }}"
+exhibitor_jar_s3_object: exhibitor-1.6.0.jar
+exhibitor_jar_dest_path: "{{ exhibitor_app_dir }}/exhibitor.jar"
+
+# Uncomment to override default s3 endpoint
+# default value is https://s3$REGION$.amazonaws.com
+# some regions i.e China use different URL format https://s3.cn-northwest-1.amazonaws.com.cn
+
+# exhibitor_s3_endpoint: https://s3$REGION$.amazonaws.com
+
+exhibitor_required_apt_packages:
+  - openjdk-8-jdk-headless
+
+exhibitor_run_sh_path: "{{ exhibitor_app_dir }}/run.sh"
+exhibitor_defaults_conf_path: "{{ exhibitor_app_dir }}/defaults.conf"
+#exhibitor_s3_bucket_config: "{{ inv_exhibitor_s3_bucket_config }}"
+exhibitor_s3_prefix: "exhibitor"
+#exhibitor_s3_bucket_region: "{{ inv_exhibitor_s3_bucket_region }}"
+
+exhibitor_zookeeper_install_dir: "/opt/zookeeper"
+exhibitor_zookeeper_data_dir: "/data/zookeeper/data"
+exhibitor_zookeeper_log_dir: "/data/zookeeper/log"
+exhibitor_zookeeper_log_index_dir: "/data/zookeeper/log-index"
+exhibitor_zookeeper_enable_filesystembackup: "true"
+exhibitor_zookeeper_backups_dir: "/data/zookeeper/backups"
+
+exhibitor_systemd_service_file: "/etc/systemd/system/exhibitor.service"
+
+exhibitor_hostname: 2
+...

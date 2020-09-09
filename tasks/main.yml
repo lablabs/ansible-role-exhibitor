@@ -1,0 +1,107 @@
+---
+
+- name: check if required variables are defined
+  assert:
+    that:
+      - exhibitor_jar_s3_bucket is defined
+      - exhibitor_s3_bucket_config is defined
+      - exhibitor_s3_bucket_region is defined
+
+- name: install required apt packages
+  apt:
+    name: "{{ exhibitor_required_apt_packages }}"
+    state: present
+    update_cache: yes
+  tags:
+    - exhibitor
+
+- name: "create {{ exhibitor_unix_user }} user"
+  user:
+    name: "{{ exhibitor_unix_user }}"
+    state: present
+  tags:
+    - exhibitor
+
+- name: "create {{ exhibitor_unix_group }} group"
+  group:
+    name: "{{ exhibitor_unix_group }}"
+    state: present
+  tags:
+    - exhibitor
+
+- name: "create exhibitor directories owned by {{ zookeeper_unix_user }}"
+  file:
+    state: directory
+    path: "{{ item }}"
+    owner: "{{ exhibitor_unix_user }}"
+    group: "{{ exhibitor_unix_group }}"
+    mode: 0775
+  loop:
+    - "{{ exhibitor_app_dir }}"
+  tags:
+    - exhibitor
+
+- name: "deploy exhibitor jar as {{ exhibitor_jar_s3_object }} s3 object from {{ exhibitor_jar_s3_bucket }} s3 bucket. "
+  aws_s3:
+    bucket: "{{ exhibitor_jar_s3_bucket }}"
+    region: "{{ exhibitor_s3_bucket_region }}"
+    object: "{{ exhibitor_jar_s3_object }}"
+    dest: "{{ exhibitor_jar_dest_path }}"
+    mode: get
+  tags:
+    - exhibitor
+
+- name: "set attributes on {{ exhibitor_jar_dest_path }} jar"
+  file:
+    path: "{{ exhibitor_jar_dest_path }}"
+    owner: "{{ exhibitor_unix_user }}"
+    group: "{{ exhibitor_unix_group }}"
+    mode: 0550
+  tags:
+    - exhibitor
+
+- name: "deploy run.sh"
+  template:
+    src: "templates/run.sh.j2"
+    dest: "{{ exhibitor_run_sh_path }}"
+    owner: "{{ exhibitor_unix_user }}"
+    group: "{{ exhibitor_unix_group }}"
+    mode: 0755
+  notify:
+    - restart exhibitor service
+  tags:
+    - exhibitor
+
+- name: "deploy defaults.conf"
+  template:
+    src: "templates/defaults.conf.j2"
+    dest: "{{ exhibitor_defaults_conf_path }}"
+    owner: "{{ exhibitor_unix_user }}"
+    group: "{{ exhibitor_unix_group }}"
+    mode: 0644
+  notify:
+    - restart exhibitor service
+  tags:
+    - exhibitor
+
+- name: "deploy {{ exhibitor_systemd_service_file }}"
+  template:
+    src: templates/exhibitor.service.j2
+    dest: "{{ exhibitor_systemd_service_file }}"
+    owner: "{{ exhibitor_unix_user }}"
+    group: "{{ exhibitor_unix_group }}"
+  notify:
+    - reload systemd
+    - restart exhibitor service
+  tags:
+    - exhibitor
+
+- name: start exhibitor
+  service:
+    enabled: yes
+    name: exhibitor
+    state: started
+  tags:
+    - exhibitor
+
+...

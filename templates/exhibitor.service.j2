@@ -1,0 +1,13 @@
+[Unit]
+Description=Exhibitor service
+After=network.target
+
+[Service]
+User=zookeeper
+Group=zookeeper
+SyslogIdentifier=exhibitor
+Restart=on-failure
+ExecStart={{ exhibitor_run_sh_path }}
+
+[Install]
+WantedBy=multi-user.target
